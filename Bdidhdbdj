@@ -1,0 +1,43 @@
+local function Check(productName, key)
+    local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+    if not hwid or not productName then
+        return false
+    end
+    local data = {
+        action = "checkAndSetHwid",
+        productName = productName,
+        key = key,
+        hwid = hwid
+    }
+    local request = http_request or request or (http and http.request) or (syn and syn.request)
+    local jsonData = game:GetService("HttpService"):JSONEncode(data)
+    local response = request{
+        Url = "https://servicemain.vercel.app/api/whitelist",
+        Method = 'POST',
+        Headers = {
+            ['Content-Type'] = 'application/json'
+        },
+        Body = jsonData
+    }
+    if response.StatusCode == 200 then
+        local result = game:GetService("HttpService"):JSONDecode(response.Body)
+
+        if result.status == 'success' then
+            return true
+        end
+    else
+        local result = game:GetService("HttpService"):JSONDecode(response.Body)
+        if result.Success then
+            return true
+        end
+    end
+    local result = game:GetService("HttpService"):JSONDecode(response.Body)
+    game.Players.LocalPlayer:Kick(result.message or "Error: Unknown issue")
+    return false
+end
+local product = "varx"
+script_key = script_key or ""
+local checkdone = Check(product, script_key) or false
+if not checkdone then return end
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Jakdhbeosu/Jdidhsn/refs/heads/main/Ndjsjbdb?token=GHSAT0AAAAAACZSA6SDIVVONLFS4R5U2QQAZ2AY35Q",true))()
